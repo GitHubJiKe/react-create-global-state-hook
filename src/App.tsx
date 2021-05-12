@@ -1,45 +1,81 @@
-import React, { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React from "react";
+import "./App.css";
+import createGlobalStateHook from "./hook/createGlobalStateHook";
+
+interface IAppState {
+  count: number;
+}
+
+const useAppCount = createGlobalStateHook<IAppState>({ count: 0 });
+
+const useChild1Count = createGlobalStateHook<number>(10);
+
+const useChild2Count = createGlobalStateHook<number>(0);
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [appCount] = useAppCount();
+  const [child1, setChild1Count] = useChild1Count();
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
+      <h1>Parent {appCount.count}</h1>
+      <button
+        onClick={() => {
+          setChild1Count((s) => s + 1);
+        }}
+      >
+        setChild1Count
+      </button>
+      <div>child1:{child1}</div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "stretch",
+        }}
+      >
+        <Child1 />
+        <Child2 />
+      </div>
     </div>
-  )
+  );
 }
 
-export default App
+function Child1() {
+  const [appCount, setAppCount] = useAppCount();
+  const [child1] = useChild1Count();
+  const [child2, setChild2Count] = useChild2Count();
+
+  return (
+    <div style={{ flex: 1, backgroundColor: "yellow", color: "red" }}>
+      <h2>appCount： {appCount.count}</h2>
+      <h2>Child1</h2>
+      <h2>Child2: {child2}</h2>
+      <button
+        onClick={() => {
+          setAppCount(() => ({ count: Date.now() }));
+        }}
+      >
+        setParentCount {child1}
+      </button>
+      <button
+        onClick={() => {
+          setChild2Count((s) => s + 1);
+        }}
+      >
+        setChild2Count
+      </button>
+    </div>
+  );
+}
+
+function Child2() {
+  const [count2] = useChild2Count();
+  return (
+    <div style={{ flex: 1, backgroundColor: "green", color: "#fff" }}>
+      <h2>Child2</h2> <label style={{ fontSize: 40 }}>{count2}</label>
+    </div>
+  );
+}
+
+export default App;
