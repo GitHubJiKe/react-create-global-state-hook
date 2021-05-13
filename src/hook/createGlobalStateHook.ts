@@ -7,10 +7,18 @@ import { useState, useEffect } from "react";
  * @param initState 支持函数式懒初始化
  */
 
+function genEventsMap<S>(): Map<Symbol, Array<(s: S) => void>> {
+  return new Map<Symbol, Array<(s: S) => void>>();
+}
+let eventsMap: Map<Symbol, Array<(s: any) => void>>;
+
 export default function createGlobalStateHook<S>(initState: S) {
   type InnerS = S extends () => any ? ReturnType<S> : S;
   const moduleName = Symbol();
-  const eventsMap = new Map<Symbol, Array<(s: InnerS) => void>>();
+
+  if (!eventsMap) {
+    eventsMap = genEventsMap<S>();
+  }
 
   function isFunc(func: any): func is (s: InnerS) => InnerS {
     return typeof func === "function";
@@ -21,18 +29,28 @@ export default function createGlobalStateHook<S>(initState: S) {
     events && events.forEach((event) => event(s));
   }
 
+  const initS = typeof initState === "function" ? initState() : initState;
+
   function useGlobalState() {
-    const initS = typeof initState === "function" ? initState() : initState;
+    let idx = 0; // 使用下标记录每一次use的setState的位置，用于在组件卸载的时候移除监听
+
     const [state, setState] = useState<InnerS>(initS);
 
     useEffect(() => {
       if (eventsMap.get(moduleName)) {
-        eventsMap.get(moduleName)?.push(setState);
+        eventsMap.get(moduleName).push(setState);
+        idx = eventsMap.get(moduleName).length - 1;
       } else {
         eventsMap.set(moduleName, [setState]);
       }
       return () => {
-        eventsMap.delete(moduleName);
+        if (eventsMap.get(moduleName)) {
+          eventsMap.get(moduleName).splice(idx, 1);
+        }
+
+        if (eventsMap.get(moduleName)?.length === 0) {
+          eventsMap.delete(moduleName);
+        }
       };
     }, []);
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import createGlobalStateHook from "./hook/createGlobalStateHook";
 
@@ -15,7 +15,7 @@ const useChild2Count = createGlobalStateHook<number>(0);
 function App() {
   const [appCount] = useAppCount();
   const [child1, setChild1Count] = useChild1Count();
-
+  const [hide, setHide] = useState(false);
   return (
     <div className="App">
       <h1>Parent {appCount.count}</h1>
@@ -34,9 +34,12 @@ function App() {
           alignItems: "stretch",
         }}
       >
+        {!hide && <Child1 />}
         <Child1 />
         <Child2 />
+        {!hide && <Child2 />}
       </div>
+      <button onClick={() => setHide(!hide)}>hide</button>
     </div>
   );
 }
