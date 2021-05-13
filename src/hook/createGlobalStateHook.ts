@@ -30,11 +30,14 @@ export default function createGlobalStateHook<S>(initState: S) {
   }
 
   const initS = typeof initState === "function" ? initState() : initState;
+  let __s__; // 记录state的引用 在下次调用hook的时候，如果存在实例化过的__s__直接返回此引用即可，不用再次返回initS,避免当组件卸载再次装载后数据同步不及时的问题
 
   function useGlobalState() {
     let idx = 0; // 使用下标记录每一次use的setState的位置，用于在组件卸载的时候移除监听
 
-    const [state, setState] = useState<InnerS>(initS);
+    const [state, setState] = useState<InnerS>(__s__ || initS);
+
+    __s__ = state;
 
     useEffect(() => {
       if (eventsMap.get(moduleName)) {
@@ -50,6 +53,7 @@ export default function createGlobalStateHook<S>(initState: S) {
 
         if (eventsMap.get(moduleName)?.length === 0) {
           eventsMap.delete(moduleName);
+          __s__ = null;
         }
       };
     }, []);

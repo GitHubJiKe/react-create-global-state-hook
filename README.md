@@ -1,3 +1,11 @@
+# React Create Global State Hook
+
+> 超轻量级别的自定义 hook,实现跨组件共享 state,无需借助 Context Api,基于事件,基于 TypeScript,只能推到，友好提示,符合原生 useState 的使用直觉
+
+
+使用示例：
+
+```tsx
 import React, { useState } from "react";
 import "./App.css";
 import createGlobalStateHook from "./hook/createGlobalStateHook";
@@ -12,6 +20,7 @@ const useChild1Count = createGlobalStateHook<number>(10);
 
 const useChild2Count = createGlobalStateHook<number>(0);
 
+// 父组件
 function App() {
   const [appCount] = useAppCount();
   const [child1, setChild1Count] = useChild1Count();
@@ -19,23 +28,6 @@ function App() {
   return (
     <div className="App">
       <h1>Parent {appCount.count}</h1>
-      <a
-        target="_blank"
-        href="https://github.com/GitHubJiKe/react-create-global-state-hook"
-        style={{
-          position: "absolute",
-          top: 10,
-          right: 20,
-          fontSize: 30,
-          color: "blue",
-          textDecoration: "none",
-          backgroundColor: "yellow",
-          padding: 10,
-          borderRadius: 20,
-        }}
-      >
-        github link
-      </a>
       <button
         onClick={() => {
           setChild1Count((s) => s + 1);
@@ -60,7 +52,7 @@ function App() {
     </div>
   );
 }
-
+// 子组件1
 function Child1() {
   const [appCount, setAppCount] = useAppCount();
   const [child1] = useChild1Count();
@@ -88,7 +80,7 @@ function Child1() {
     </div>
   );
 }
-
+// 子组件2
 function Child2() {
   const [count2] = useChild2Count();
   return (
@@ -99,3 +91,4 @@ function Child2() {
 }
 
 export default App;
+```
