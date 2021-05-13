@@ -1,7 +1,6 @@
 # React Create Global State Hook
 
-> 超轻量级别的自定义 hook,实现跨组件共享 state,无需借助 Context Api,基于事件,基于 TypeScript,只能推到，友好提示,符合原生 useState 的使用直觉
-
+> 超轻量级别的自定义 hook,实现跨组件共享 state,无需借助 Context Api,基于事件,基于 TypeScript,智能推导,友好提示,符合原生 useState 的使用直觉
 
 使用示例：
 
