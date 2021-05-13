@@ -1,8 +1,9 @@
 # React Create Global State Hook
 
-> 超轻量级别的自定义 hook,实现跨组件共享 state,无需借助 Context Api,基于事件,基于 TypeScript,智能推导,友好提示,符合原生 useState 的使用直觉
+> Ultra-lightweight cross-component shared state hook function.
+> Based on Typecsript, friendly prompts, in line with the intuition of native useState
 
-使用示例：
+Use Case：
 
 ```tsx
 import React, { useState } from "react";
@@ -19,7 +20,7 @@ const useChild1Count = createGlobalStateHook<number>(10);
 
 const useChild2Count = createGlobalStateHook<number>(0);
 
-// 父组件
+
 function App() {
   const [appCount] = useAppCount();
   const [child1, setChild1Count] = useChild1Count();
@@ -51,7 +52,7 @@ function App() {
     </div>
   );
 }
-// 子组件1
+
 function Child1() {
   const [appCount, setAppCount] = useAppCount();
   const [child1] = useChild1Count();
@@ -79,7 +80,7 @@ function Child1() {
     </div>
   );
 }
-// 子组件2
+
 function Child2() {
   const [count2] = useChild2Count();
   return (
